@@ -5,3 +5,5 @@ Simple Service Discovery Protocol (SSDP) LAN/WAN analyzer/manipulation framework
 
 ## BUILD OPTIONS:
 `./install.sh`
+
+Note: This README.md file is still a work in progress. Visit: https://github.com/PlatinumVoyager/BrightStar/wiki for advanced information.
