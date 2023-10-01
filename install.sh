@@ -10,6 +10,10 @@ OG="\033[1;32m"
 # octal \033[0;m ansi escape sequence
 OE="\033[0;m"
 
+# create directories that 'git' doesnt
+BUILD_DIRS="mkdir modules/obj modules/bin bin obj"
+$BUILD_DIRS
+
 MAKE_EXEC="chmod +x install_readline.sh"
 
 echo -e "Making $OG \binstall_readline.sh$OE executable..."
