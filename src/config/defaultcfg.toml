@@ -1,0 +1,11 @@
+[ssdp_options]
+    port = 1900
+
+    # local administrative target multicast scope address
+    multicast_scope_address = "239.255.255.250"
+
+    sock_timeout = 120 # socket settimeout interval
+    httpumx = 1 # maximum delay before responding
+    packetmx = 3 # maximum packet count to send to mutlicast group
+    st = "ssdp:all" # search targets
+    manext = "ssdp:discover" # mandatory extension

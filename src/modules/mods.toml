@@ -1,0 +1,7 @@
+[modules_supported]
+    current = [
+        "httpu-discovery:Discover SSDP controllers on the local area network via HTTP UDP"
+    ]
+
+[modules_dep]
+    current = 0
