@@ -78,3 +78,4 @@ $(MODOBJDIR)/%.o: $(MODSRCDIR)/%.c
 clean:
 	rm -f $(OBJ) $(TARGET)
 	rm -f $(MODOBJ) $(MODTARGET)
+	rm -rf modules/bin modules/obj bin/ obj/
