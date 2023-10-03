@@ -24,3 +24,5 @@ char *static_cmd_invoke_generator(const char *cmd, int state);
 #define INVOKE_INFO_IDENTIFIER printf("%s BRIGHTSTAR::Info => supported command: \"%s\"\n", GREEN_OK, opts[0]);
 
 #endif
+
+// WireEye 2023 - BRIGHTSTAR SSDP analyzer/manipulation Framework

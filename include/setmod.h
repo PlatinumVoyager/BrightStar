@@ -33,3 +33,5 @@ toml_table_t *module_information;
     DISPLAY_MODULE_INFO \
 
 #endif
+
+// WireEye 2023 - BRIGHTSTAR SSDP analyzer/manipulation Framework

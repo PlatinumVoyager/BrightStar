@@ -10,6 +10,8 @@ OG="\033[1;32m"
 # octal \033[0;m ansi escape sequence
 OE="\033[0;m"
 
+argv_0=$1
+
 # create directories that 'git' doesnt
 BUILD_DIRS="mkdir modules/obj modules/bin bin obj"
 $BUILD_DIRS
@@ -31,7 +33,15 @@ else
 fi
 
 START_LIB="bash install_readline.sh"
-$START_LIB
+
+# if you are reading this source file, call --skip-install=yes
+# to skip past sudo 'enter password' prompt when building source files
+if [ "$argv_0" == "--skip-install=yes" ]; then
+    echo -e "Not installing, rebuilding source...\n"
+
+else
+    $START_LIB
+fi
 
 echo -e "Building from source...\n"
 

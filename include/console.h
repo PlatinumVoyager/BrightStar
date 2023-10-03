@@ -71,3 +71,5 @@ char *static_cmd_console_generator(const char *cmd, int state);
                 return NULL;\
 
 #endif
+
+// WireEye 2023 - BRIGHTSTAR SSDP analyzer/manipulation Framework

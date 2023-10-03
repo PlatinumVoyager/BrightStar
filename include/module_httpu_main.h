@@ -53,3 +53,5 @@ int send_ssdp_discovery_msg(char msg[], size_t msg_sz, int packet_mx);
 
 
 #endif
+
+// WireEye 2023 - BRIGHTSTAR SSDP analyzer/manipulation Framework

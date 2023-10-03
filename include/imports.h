@@ -27,3 +27,5 @@
 #define ESCAPE "\033[0;m"
 
 #endif
+
+// WireEye 2023 - BRIGHTSTAR SSDP analyzer/manipulation Framework

@@ -73,3 +73,5 @@ char *static_cmd_httpu_generator(const char *cmd, int state);
 
 
 #endif
+
+// WireEye 2023 - BRIGHTSTAR SSDP analyzer/manipulation Framework

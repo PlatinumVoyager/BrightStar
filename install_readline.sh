@@ -4,6 +4,8 @@
 #                                                                         v
 ##!/bin/bash
 
+argv_0=$1
+
 # octal \033 green for stdout information
 OG="\033[1;32m"
 
@@ -34,10 +36,10 @@ CMD="sudo apt install $TARGETS -y"
 INIT_MSG="\t** Installing required files for procedure to return success (no exit) on return"
 BRIGHTSTAR="$GSS BRIGHTSTAR::Info => Installing Libreadline (>= 8.1.2-1) via apt..."
 
+# install libreadline8 && libreadline-dev
 echo -e "$BRIGHTSTAR\n$INIT_MSG\n\nThe following command:\n\t$OG$CMD$OE\n\nwill be executed...\n"
 sleep 3
 
-# install libreadline8 && libreadline-dev
 $CMD
 
 # processor name, platform name
