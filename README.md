@@ -5,7 +5,7 @@
 
 <br/>
 
-## GETTING STARTED:
+## GETTING STARTED
 Refer to the  [official wiki](https://github.com/PlatinumVoyager/BrightStar/wiki) for further information.
 
 <br/>
