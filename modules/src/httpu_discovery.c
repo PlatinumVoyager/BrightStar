@@ -705,10 +705,8 @@ int setup_client_socket_opts(void)
     // set socket timeout opts
     struct timeval timeout;
 
-    timeout.tv_sec = atoi(sockt_opt); // 2 minutes
+    timeout.tv_sec = atoi(sockt_opt);
     timeout.tv_usec = 0;
-
-    // printf("%s Setup UDP socket for multicast scope discovery request successfully...\n", GREEN_OK);
 
     // set data no receive socket timeout opt
     if (setsockopt(client_multicast_sock, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout)) == -1)
@@ -944,9 +942,6 @@ int main(int argc, char *argv[]) {
         return -1;
     }
 
-    // srand(time(NULL));
-    // setlocale(LC_ALL, "");
-
     // setup global size options
     fmt_sz = strlen(FMT_DATA) + 1;
     m_search_sz = strlen(MSEARCH_STRING) + fmt_sz + 1; // "M-SEARCH * HTTP/1.1\r\n" + '\0'
@@ -1084,16 +1079,6 @@ int main(int argc, char *argv[]) {
     for (size_t i = 0; i < (sizeof(ssdp_char_msg) / sizeof(ssdp_char_msg[0])); i++)
     {
         free(ssdp_char_msg[i]);
-
-        // dissect string to find fmt_data (format data)
-        // if (ssdp_char_msg[i][0] == '\r' || ssdp_char_msg[i][0] == '\n')
-        // {
-        //     printf("freed \\r\\n\n");
-        // }
-        // else
-        // {
-        //     printf("freed %s", ssdp_char_msg[i]);
-        // }
     }
 
     return 0;

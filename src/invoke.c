@@ -409,8 +409,7 @@ void list_ssdp_operations(void)
         snprintf(TARGET, sizeof(TARGET), "%s", ssdp_targets[i]);
 
         ft_set_cell_prop(table, CURRENT_ROW, 1, FT_CPROP_CONT_TEXT_STYLE, FT_TSTYLE_ITALIC);
-        // ft_set_cell_prop(table, CURRENT_ROW, 0, FT_CPROP_CONT_FG_COLOR, FT_COLOR_DARK_GRAY);
-        
+    
         ft_write_ln(table, ID, TARGET);
     }
 

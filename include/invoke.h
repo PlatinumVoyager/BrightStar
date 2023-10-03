@@ -16,7 +16,7 @@ char *static_cmd_invoke_generator(const char *cmd, int state);
 
 #define MAX_TOKENS 8
 #define MAX_INPUT_LEN 50
-#define SYSTEM_SUBSHELL_VERSION "3.3"
+#define SYSTEM_SUBSHELL_VERSION "1.2"
 
 #define MINIMUM_OPTS 2
 

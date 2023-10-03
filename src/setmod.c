@@ -15,8 +15,6 @@ char module_descriptions[MAX_SUPPORTED_MODULES][100];
 
 size_t module_size = 0;
 
-// if lens == 0, IS_TOML_LOADED = 0
-
 int IS_SETMOD_LOAD = 0; // this determines whether or not "setmod load" was called before "setmod list" 
 int IS_TOML_LOADED = 0; // defines whether or not the .toml files were loaded
                         // only set to '1' if BOTH files have been loaded into memory (post parsed)
@@ -30,10 +28,8 @@ toml_table_t *module_information;
 
 void setmod_cmd_handler(char *opt)
 {   
-    size_t sub_count = 0;
+    size_t sub_count = 0, mod_count = 0;
     size_t options_size = sizeof(setmod_options) / sizeof(setmod_options[0]);
-
-    size_t mod_count = 0;
 
     for (size_t i = 0; i < options_size; i++)
     {
@@ -111,9 +107,6 @@ void setmod_cmd_handler(char *opt)
 
                     if (mod_count == module_size)
                     {
-                        // not a module, default to generic error msg below for now
-                        // printf("%s BRIGHTSTAR::Error => no module name/id found for: \"%s\"\n", RED_ERR, opt);
-
                         break;
                     }
                 }
@@ -226,8 +219,6 @@ void list_supported_modules(void)
         else 
         {
             ft_set_cell_prop(table, CURRENT_ROW, 0, FT_CPROP_CONT_TEXT_STYLE, FT_TSTYLE_BOLD);
-            // ft_set_cell_prop(table, CURRENT_ROW, 1, FT_CPROP_CONT_FG_COLOR, FT_COLOR_LIGHT_YELLOW);
-            
             ft_write_ln(table, ID, module, desc);
         }
     }

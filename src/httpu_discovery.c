@@ -825,7 +825,6 @@ int httpu_set_cmd_handler(char *option, char *value, char *module_options[], int
             // instead of setting it directly like below
             if (strlen(value) > 0)
             {
-                printf("%ld\n", strlen(value));
                 SET_STATIC_OPTION_BOUNDRY
             }
 
@@ -1084,7 +1083,6 @@ int set_search_target_opt(char *st)
 
     if (isdigit(st[0]))
     {
-
         // got ID (potentially), received integer from string
         // potentially because the first index of st is an integer but the 2nd index
         // of st may be a char type

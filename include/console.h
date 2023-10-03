@@ -18,7 +18,7 @@ void rl_console_memload_primary_array(void);
 char **static_cmd_console_completion(const char *cmd, int start, int end);
 char *static_cmd_console_generator(const char *cmd, int state);
 
-#define BRIGHTSTAR_VERSION "0.9.1"
+#define BRIGHTSTAR_VERSION "1.0"
 #define COMMAND_INVOKE "$(which clear)"
 
 #define MAX_LINES 100

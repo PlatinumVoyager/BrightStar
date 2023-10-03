@@ -117,7 +117,6 @@ void primary_cmd_handler(char *opts[], int token_count)
 
     char *cmd = opts[0];
 
-    // printf("%s\n", cmd);
     size_t cmd_err = 0;
     size_t cmd_len = sizeof(commands) / sizeof(commands[0]);
 

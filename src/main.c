@@ -1,7 +1,6 @@
 #include "../include/imports.h"
 #include "../include/console.h"
 
-// create method to join multicast group and listen for NOTIFY messages
 
 // optional define directives
 void display_help(void);
