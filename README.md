@@ -9,6 +9,11 @@
 Refer to the  [official wiki](https://github.com/PlatinumVoyager/BrightStar/wiki) for further information.
 
 <br/>
+
+## Low on time?
+For a quick setup guide view the [setup](https://github.com/PlatinumVoyager/BrightStar/wiki#setup) section of the wiki.
+
+<br/>
 <br/>
 <br/>
 
