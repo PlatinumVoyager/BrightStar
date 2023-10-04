@@ -79,3 +79,4 @@ clean:
 	rm -f $(OBJ) $(TARGET)
 	rm -f $(MODOBJ) $(MODTARGET)
 	rm -rf modules/bin modules/obj bin/ obj/
+	chmod -x install_readline.sh
