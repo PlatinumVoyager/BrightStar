@@ -84,6 +84,9 @@ char st_f[60];
 // max of 1000 supported
 char recvmx_f[RECEVIED_MAX_BOUNDARY];
 
+// show (unlimited) next to 0 for RECVMAX
+int GOT_RECVMAX_0 = 0;
+
 // was "show targets" called? this is used for pretty formatting to stdout
 int SHOW_TARGETS_CALLED = 0;
 
@@ -653,11 +656,43 @@ void display_preliminary_options(void)
 
         char name[name_len];
         char desc[desc_len];
-        char value[value_len];
+
+        // change signature to support (unlimited) when RECVMAX = 0;
+        char *value = NULL;
 
         snprintf(name, name_len, "%s", toml_discovery_names[i]);
         snprintf(desc, desc_len, "%s", toml_name_description[i]);
-        snprintf(value, value_len, "%s", toml_discovery_values[i]);
+
+        // setup (unlimited)
+        if (strcmp(toml_discovery_values[i], "0") == 0)
+        {
+            size_t sz = snprintf(NULL, 0, "%s (unlimited)", toml_discovery_values[i]);
+
+            value = (char *) malloc(sz * sizeof(value));
+
+            if (value == NULL)
+            {
+                printf("%s BRIGHTSTAR::Error => failed to allocate memory for RECVMAX formatting!\n", RED_ERR);
+
+                return;
+            }
+
+            sprintf(value, "%s (unlimited)", toml_discovery_values[i]);
+        }
+
+        else 
+        {
+            value = (char *) malloc (value_len * sizeof(value));
+
+            if (value == NULL)
+            {
+                printf("%s BRIGHTSTAR::Error => failed to allocate memory for RECVMAX formatting!\n", RED_ERR);
+
+                return;
+            }
+
+            snprintf(value, value_len, "%s", toml_discovery_values[i]);
+        }
 
         ft_write_ln(table, name, desc, value);
     }
@@ -1053,6 +1088,12 @@ void confer_variable_values(char *opt, size_t index)
     else if (strcmp(opt, "RECVMAX") == 0)
     {
         opt = "RECEIVED MAX";
+
+        // got option, set value for display (unlimited)
+        if (strcmp(toml_discovery_values[TOML_DISCOVERY_RECVMAX], "0") == 0)
+        {
+            GOT_RECVMAX_0 = 1;
+        }
     }
 
     size_t opt_size = strlen(opt);
@@ -1085,7 +1126,40 @@ void confer_variable_values(char *opt, size_t index)
     ft_set_cell_prop(table, 0, 1, FT_CPROP_CONT_TEXT_STYLE, FT_TSTYLE_BOLD);
 
     char *desc = toml_name_description[index];
-    char *value = toml_discovery_values[index];
+    char *value = NULL;
+
+    // for formatting RECVMAX (unlimited) when value = 0
+    switch (GOT_RECVMAX_0)
+    {
+        case 0:
+        {
+            value = toml_discovery_values[index];
+
+            break;
+        }
+
+        case 1:
+        {
+            char *current_value = toml_discovery_values[TOML_DISCOVERY_RECVMAX]; // TOML_DISCOVERY_RECVMAX = 7
+
+            size_t sz = snprintf(NULL, 0, "%s (unlimited)", current_value);
+
+            value = (char *) malloc(sz * sizeof(value));
+
+            if (value == NULL)
+            {
+                printf("%s BRIGHTSTAR::Error => failed to allocate memory for RECVMAX formatting!\n", RED_ERR);
+
+                return;
+            }
+
+            sprintf(value, "%s (unlimited)", current_value);
+
+            GOT_RECVMAX_0--;
+
+            break;
+        }
+    }
 
     ft_write_ln(table, desc, value);
 
