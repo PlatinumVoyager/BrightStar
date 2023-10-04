@@ -5,7 +5,6 @@
 #include "../include/console.h"
 #include "../include/setmod.h"
 #include "../include/httpu_discovery.h"
-#include "../include/module_httpu_main.h"
 
 #include "../include/fort.h"
 
@@ -13,7 +12,7 @@
 char *httpu_module_options[] = {
     "help", "?",
     "set",
-    "show",
+    "show", "ls", "dir",
     "init", "start", "run",
     "clear",
     "back"
@@ -37,7 +36,8 @@ char *toml_discovery_names[] = {
     "SSDPMX",
     "PMX",
     "ST",
-    "MANEXT"
+    "MANEXT",
+    "RECVMAX"
 };
 
 // used for actual data passed to the cli when setting custom OPTIONS
@@ -48,26 +48,31 @@ char *httpu_scope_options[] = {
     "SSDPMX",
     "PMX",
     "ST",
-    "MANEXT" // can't be changed, thus removed as an option, yet left in so "show MANEXT" can be executed
-             // why? the character array 'toml_discovery_names' holds 7 adjacent positions within 
-             // the virtually allocated process memory, if "MAXEXT" is removed from
-             // 'httpu_scope_options' then 'httpu_scope_options' (6) < 'toml_discovery_names' (7)
+    "MANEXT", // can't be changed, thus removed as an option, yet left in so "show MANEXT" can be executed
+              // why? the character array 'toml_discovery_names' holds 7 adjacent positions within 
+              // the virtually allocated process memory, if "MAXEXT" is removed from
+              // 'httpu_scope_options' then 'httpu_scope_options' (6) < 'toml_discovery_names' (7)
+    "RECVMAX"
 };
 
-char *primary_tab_complete_cmds[(SCOPE_DISCOVERY_SIZE * 2) + 1]; // 16 + 1 = 17; + 1 = '\0'
+
+// store TAB supported commands, if this buffer is not large enough
+// produces a segmentation fault for "out of bounds" memory access violations
+char *primary_tab_complete_cmds[(SCOPE_DISCOVERY_SIZE * 2) + SCOPE_DISCOVERY_SIZE];
 
 // values obtained from the 'defaultcfg.toml' configuration file
-char *toml_discovery_values[7];
+char *toml_discovery_values[8];
 
 // the string value of the TOML configuration options
-char *toml_name_description[7] = {
+char *toml_name_description[8] = {
     "primary port of target multicast domain",
     "local administrative multicast scope address for SSDP (HTTP/UDP)",
     "maximum SO_RCVTIMEO (SOL_SOCKET) timeout duration in seconds",
     "maximum interval for server \"wait\" response duration in seconds",
     "the maximum amount of packets to send into the target multicast domain",
     "the engagement string for the root control point via HTTP M-SEARCH header",
-    "mandatory extension string for the root control point (must be \"ssdp:discover\")"
+    "mandatory extension string for the root control point (must be \"ssdp:discover\")",
+    "the amount of unicast SSDP response messages to print to stdout before exiting"
 };
 
 char port_f[5]; 
@@ -75,6 +80,9 @@ char socktimeout_f[5];
 char httpumx_f[5];
 char pmx_f[5];
 char st_f[60];
+
+// max of 1000 supported
+char recvmx_f[RECEVIED_MAX_BOUNDARY];
 
 // was "show targets" called? this is used for pretty formatting to stdout
 int SHOW_TARGETS_CALLED = 0;
@@ -326,7 +334,7 @@ void httpu_cmd_handler(char *opts[], int token_count)
                 }
             }
 
-            else if (strcmp(cmd, "show") == 0)
+            else if (strcmp(cmd, "show") == 0 || strcmp(cmd, "ls") == 0 || strcmp(cmd, "dir") == 0)
             {
                 // checks for the 2nd option to "show"
                 if (token_count == (HTTPU_SETCMD_MAX - 1))
@@ -428,25 +436,9 @@ void httpu_cmd_handler(char *opts[], int token_count)
                         return;
                     }
                 }
-
+                
                 // call main function handler and supply values needed to operate successfully when called by the operator directly
                 // via "init", "start" or "run" respectively
-
-                // Mnemonic             Index (toml_discovery_values)
-                // ========             =====
-                // PORT                 0
-                // SCOPE_ADDRESS        1
-                // TIMEOUT              2
-                // SSDP MX              3
-                // PACKET MAX           4
-                // SEARCH TARGET        5
-                // MANDATORY EXTENSION  6   (SKIP)
-
-                // cool trick to setup the size of a message you want to write
-                // size_t needed = snprintf(NULL, 0, "%s: %s (%d)", msg, strerror(errno), errno) + 1;
-                // char  *buffer = malloc(needed); // check if NULL
-                // sprintf(buffer, "%s: %s (%d)", msg, strerror(errno), errno);
-                
                 register_main_module_method();
 
                 return;
@@ -702,6 +694,8 @@ void populate_preliminary_options(toml_table_t *config)
     toml_datum_t st = toml_string_in(default_config, "st"); // search target
     toml_datum_t man_ext = toml_string_in(default_config, "manext");
 
+    toml_datum_t recv_max = toml_int_in(default_config, "receivedmax");
+
     if (!port.ok) { printf("%s BRIGHTSTAR::Error => could not find field \"ssdp_options.port\"\n", RED_ERR); exit(-1); }
     else if (!target.ok) { printf("%s BRIGHTSTAR::Error => could not find field \"ssdp_options.multicast_scope_address\"\n", RED_ERR); exit(-1); }
     else if (!socktimeout.ok){ printf("%s BRIGHTSTAR::Error => could not find field \"ssdp_options.sock_timeout\"\n", RED_ERR); exit(-1); }
@@ -709,6 +703,7 @@ void populate_preliminary_options(toml_table_t *config)
     else if (!pmx.ok) { printf("%s BRIGHTSTAR::Error => could not find field \"ssdp_options.packetmx\"\n", RED_ERR); exit(-1); }
     else if (!st.ok) { printf("%s BRIGHTSTAR::Error => could not find field \"ssdp_options.st\"\n", RED_ERR); exit(-1); }
     else if (!man_ext.ok) { printf("%s BRIGHTSTAR::Error => could not find field \"ssdp_options.manext\"\n", RED_ERR); exit(-1); }
+    else if (!recv_max.ok) { printf("%s BRIGHTSTAR::Error => could not find field \"ssdp_options.receivedmax\"\n", RED_ERR); exit(-1); }
 
     // port integer value
     snprintf(port_f, sizeof(port.u.i), "%ld", port.u.i);
@@ -735,6 +730,12 @@ void populate_preliminary_options(toml_table_t *config)
 
     // mandatory extension (cannot be changed)
     toml_discovery_values[pos] = man_ext.u.s; pos++;
+
+    // received maximum amount of responses
+    snprintf(recvmx_f, sizeof(recvmx_f), "%ld", recv_max.u.i);
+    toml_discovery_values[pos] = recvmx_f; pos++;
+
+    // proof of memory allocation success, values have been stored successfully
     POPULATE_MEM_ALLOCATED = 1;
 
     return;
@@ -746,12 +747,26 @@ void populate_preliminary_options(toml_table_t *config)
 // by the operator before calling ./bin/BRIGHTSTAR
 void register_main_module_method(void)
 {
-    // allocate space for sys command
-    char *msa = toml_discovery_values[1]; char *port = toml_discovery_values[0]; 
-    char *st = toml_discovery_values[5]; char *mx = toml_discovery_values[3];
+    // Mnemonic             Index (toml_discovery_values)
+    // ========             =============================
+    // PORT                 0
+    // SCOPE_ADDRESS        1
+    // TIMEOUT              2
+    // SSDP MX              3
+    // PACKET MAX           4
+    // SEARCH TARGET        5
+    // MANDATORY EXTENSION  6   (SKIP)
+    // RECVMAX              7
 
-    char *packet_mx, *sockt_opt;
-    packet_mx = toml_discovery_values[4]; sockt_opt = toml_discovery_values[2];
+    // allocate space for sys command
+    char *msa = toml_discovery_values[TOML_DISCOVERY_SCOPE_ADDR]; char *port = toml_discovery_values[TOML_DISCOVERY_PORT]; 
+    char *st = toml_discovery_values[TOML_DISCOVERY_ST]; char *mx = toml_discovery_values[TOML_DISCOVERY_SSDPMX];
+
+    char *packet_mx, *sockt_opt, *recv_max;
+    
+    packet_mx = toml_discovery_values[TOML_DISCOVERY_PMX]; // packet maximum to send
+    sockt_opt = toml_discovery_values[TOML_DISCOVERY_TIMEOUT]; // socket timeout option
+    recv_max = toml_discovery_values[TOML_DISCOVERY_RECVMAX]; // maximum responses option
 
     char *target = PRIME_MODULE_LOCATION; 
     char *opts_msg = "CURRENT OPTIONS";
@@ -770,9 +785,9 @@ void register_main_module_method(void)
     // generic table buffer, not important enough to generate full tables with libfort
     printf("\tName\t\tValue\n");
     printf("\t----\t\t-----\n");
-    printf("\tMSA\t\t%s\n\tPORT\t\t%s\n\tST\t\t%s\n\tSSDPMX\t\t%s\n\tPMX\t\t%s\n\tTIMEOUT\t\t%s\n\n", msa, port, st, mx, packet_mx, sockt_opt);
+    printf("\tMSA\t\t%s\n\tPORT\t\t%s\n\tST\t\t%s\n\tSSDPMX\t\t%s\n\tPMX\t\t%s\n\tTIMEOUT\t\t%s\n\tRECVMAX\t\t%s\n\n", msa, port, st, mx, packet_mx, sockt_opt, recv_max);
 
-    size_t final_sz = strlen(target) + strlen(msa) + strlen(port) + strlen(st) + strlen(mx) + strlen(packet_mx) + strlen(sockt_opt) + 1;
+    size_t final_sz = strlen(target) + strlen(msa) + strlen(port) + strlen(st) + strlen(mx) + strlen(packet_mx) + strlen(sockt_opt) + strlen(recv_max) + 1;
 
     char *cmd = (char *) malloc(final_sz * sizeof(cmd));
 
@@ -783,7 +798,7 @@ void register_main_module_method(void)
         return;
     }
 
-    snprintf(cmd, final_sz * 2, "%s %s %s %s %s %s %s", target, msa, port, st, mx, packet_mx, sockt_opt);    
+    snprintf(cmd, final_sz * 2, "%s %s %s %s %s %s %s %s", target, msa, port, st, mx, packet_mx, sockt_opt, recv_max);    
     printf("%s Executing => \"./%s\"\n", GREEN_OK, cmd);
 
     system((const char *) cmd);
@@ -969,6 +984,21 @@ int httpu_set_cmd_handler(char *option, char *value, char *module_options[], int
 
             return GENERIC_ERROR_RETURN_NONE;
         }
+
+        // RECEIVED MAX
+        else if (strcmp(option, "RECVMAX") == 0)
+        {
+            PRE_CONDITIONAL_VALUE_CHECK
+
+            if (atoi(value) < 0 || atoi(value) > RECEVIED_MAX_BOUNDARY || !isdigit(value[0]))
+            {
+                printf("%s BRIGHTSTAR::Error => invalid argument of \"%s\" passed to \"RECVMAX\" was detected. Value is non 0 or above\n", RED_ERR, value);
+
+                return GENERIC_ERROR_RETURN_NONE;
+            }
+
+            SET_STATIC_OPTION_BOUNDRY
+        }
     }
 
     else 
@@ -989,9 +1019,6 @@ void confer_variable_values(char *opt, size_t index)
     // "SSDPMX" = MX
     // "PMX" = PACKET COUNT
     // "ST" = SEARCH TARGET
-
-    // want pretty? two character arrays containing strings. 1 options, 2nd right of "=" above (names)
-    // obtain size of one, iterate through via for (Size_t n) loop, set array indexes to n, options[n] = names[n] 
 
     if (strcmp(opt, "PORT") == 0)
     {
@@ -1021,6 +1048,11 @@ void confer_variable_values(char *opt, size_t index)
     else if (strcmp(opt, "ST") == 0)
     {
         opt = "SEARCH TARGET";
+    }
+
+    else if (strcmp(opt, "RECVMAX") == 0)
+    {
+        opt = "RECEIVED MAX";
     }
 
     size_t opt_size = strlen(opt);
@@ -1065,7 +1097,10 @@ void confer_variable_values(char *opt, size_t index)
     return;
 }
 
-
+/*
+    handle search targets
+    handle ID and string names passed to "set ST <VALUE>"
+*/
 int set_search_target_opt(char *st)
 {
     // load all supported search targets into memory if not already loaded
@@ -1250,7 +1285,7 @@ void httpu_discovery_return_help(void)
         "\033[90;1mhelp/?\033[0;m\tdisplay this inline module information buffer to stdout\n"
         "\033[90;1mset\033[0;m\n\tset \033[0;3mOPTION\033[0;m to operator supplied \033[0;3mVALUE\033[0;m (i.e, \"set <OPTION> <VALUE>\")\n\n"
         "\t\033[90;1m0_ALL\033[0;m\treturn all fields to their default values\n\n"
-        "\033[90;1mshow\033[0;m\n\tshow ALL (default) current module values or \"show <OPTION>\"\n\n"
+        "\033[90;1mshow/ls/dir\033[0;m\n\t\tshow available default current module values or \"show <OPTION>\"\n\n"
         "\t\033[90;1mtargets\033[0;m\t\tshow supported SSDP header search targets\n"
         "\t\033[90;1m<OPTION>\033[0;m\tdisplay information about the targeted modules \033[0;3mOPTION\033[0;m\n\n"
         "\033[90;1mclear\033[0;m\t\tclear the current console buffer (stdout)\n"

@@ -45,6 +45,17 @@ void register_main_module_method();
 #define SET_0ALL_TRUE 1
 #define SET_0ALL_FALSE 0
 
+#define RECEVIED_MAX_BOUNDARY 1000
+
+#define TOML_DISCOVERY_PORT 0
+#define TOML_DISCOVERY_SCOPE_ADDR 1
+#define TOML_DISCOVERY_TIMEOUT 2
+#define TOML_DISCOVERY_SSDPMX 3
+#define TOML_DISCOVERY_PMX 4
+#define TOML_DISCOVERY_ST 5
+#define TOML_DISCOVERY_MAN 6
+#define TOML_DISCOVERY_RECVMAX 7
+
 // tab completetion function prototypes
 char **static_cmd_httpu_completion(const char *cmd, int start, int end);
 char *static_cmd_httpu_generator(const char *cmd, int state);

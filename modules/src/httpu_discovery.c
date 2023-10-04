@@ -41,6 +41,7 @@ int send_ssdp_discovery_msg(char msg[], size_t msg_sz);
 
 
 static int UNICAST_RESPONSES = 0;
+static int RESPONSES_WARRANTED = 0;
 
 char *ssdp_char_msg[6];
 wchar_t *ssdp_wchar_msg[6];
@@ -810,9 +811,8 @@ int send_ssdp_discovery_msg(char msg[], size_t msg_sz)
 
             // make option to limit amount of responses recieved 
             // when it matches UNICAST_RESPONSES stop. 0 = unlimited
-            UNICAST_RESPONSES++;
 
-            sprintf(count, "HTTPU-REPLY #%d", UNICAST_RESPONSES);
+            sprintf(count, "HTTPU-REPLY #%d", UNICAST_RESPONSES + 1);
             sprintf(port, "%d", sender_addr.sin_port);
 
             size_t host_sz = snprintf(NULL, 0, "%s:%s", response_host, port);
@@ -864,6 +864,14 @@ int send_ssdp_discovery_msg(char msg[], size_t msg_sz)
 
             printf("\n%s", ft_to_string(table));
             ft_destroy_table(table);
+
+            UNICAST_RESPONSES++;
+
+            if (UNICAST_RESPONSES == RESPONSES_WARRANTED)
+            {
+                printf("\n%s Reached RECVMAX interval for UDP unicast discover responses.\n", GREEN_OK);
+                break;
+            }
         }
     }
 
@@ -935,12 +943,15 @@ int execute_httpu_module_main(char *ssdp_msa_addr, char *ssdp_msa_port, char msg
 
 
 int main(int argc, char *argv[]) {
-    if (argc < 6)
+    if (argc < 7)
     {
         printf("BRIGHTSTAR::FATAL => could not obtain the proper arguments to pass to module \"httpu-discovery\"\n");
 
         return -1;
     }
+
+    // set MAX responses to receive
+    RESPONSES_WARRANTED = atoi(argv[7]);
 
     // setup global size options
     fmt_sz = strlen(FMT_DATA) + 1;

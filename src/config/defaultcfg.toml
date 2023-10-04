@@ -9,3 +9,4 @@
     packetmx = 3 # maximum packet count to send to mutlicast group
     st = "ssdp:all" # search targets
     manext = "ssdp:discover" # mandatory extension
+    receivedmax = 0 # 0 (default) unlimited responses
