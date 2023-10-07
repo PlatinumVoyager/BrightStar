@@ -3,8 +3,8 @@
 
 
 // optional define directives
+// display help upon './bin/BRIGHTSTAR --help'
 void display_help(void);
-void list_ssdp_operations(void);
 
 
 int main(int argc, char *argv[])
@@ -68,6 +68,11 @@ int main(int argc, char *argv[])
 }
 
 
+/*
+    Display functional help utilities
+
+    @param void - no arguments passed
+*/
 void display_help(void)
 {
     size_t version_len = strlen("BRIGHTSTAR v") + strlen(BRIGHTSTAR_VERSION) + strlen(" (WireEye 2023)\n");

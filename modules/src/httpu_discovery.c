@@ -114,7 +114,11 @@ int multicast_scope_port;
 char *multicast_scope_addr;
 
 
-// setup M-SEARCH string
+/*
+    setup M-SEARCH string
+
+    @param void - no arguments passed
+*/
 int httpu_m_search_setup(void)
 {
     m_search_post = (char *) malloc(m_search_sz * sizeof(char));
@@ -140,7 +144,12 @@ int httpu_m_search_setup(void)
 }
 
 
-// setup Host string
+/*
+    setup Host string
+
+    @param hostname - the Multicast address
+    @param udp_port - the Multicast port
+*/
 int httpu_host_setup(char *hostname, char *udp_port)
 {
     host = hostname;
@@ -173,7 +182,11 @@ int httpu_host_setup(char *hostname, char *udp_port)
 }
 
 
-// setup ST string
+/*
+    setup Search target
+
+    @param search_target - the search target
+*/
 int httpu_st_setup(char *search_target)
 {
     st = search_target; // search target
@@ -203,7 +216,11 @@ int httpu_st_setup(char *search_target)
 }
 
 
-// setup MX string
+/*
+    setup MX string
+
+    @param ssdp_mx - the ssdp mx value
+*/
 int httpu_mx_setup(char *ssdp_mx)
 {
     // going to assume this is used to prevent flooding the root control point
@@ -237,10 +254,14 @@ int httpu_mx_setup(char *ssdp_mx)
 }
 
 
-// setup MAN string
+/*
+    setup MAN string
+
+    @param void - no arguments passed
+*/
 int httpu_man_setup(void)
 {
-    char *man = MANDATORY_EXT; // mandatory extension
+    char *man = MANDATORY_EXT; // mandatory extension declaration
     char *man_ext = "MAN:";
     char *esc = "\"";
 
@@ -269,7 +290,11 @@ int httpu_man_setup(void)
 }
 
 
-// setup fmt_data string
+/*
+    setup fmt_data string '\r\n'
+
+    @param void - no arguments passed
+*/
 int httpu_fmt_data_setup(void)
 {
     fmt_data_post = (char *) malloc(fmt_sz * sizeof(char));
@@ -295,7 +320,11 @@ int httpu_fmt_data_setup(void)
 }
 
 
-// copy generic char targets to char array 'ssdp_char_msg'
+/*
+    copy generic char targets to char array 'ssdp_char_msg'
+
+    @param void - no arguments passed
+*/
 int set_ssdp_char_msg_elements(void)
 {
     size_t i = 0;
@@ -351,7 +380,11 @@ int set_ssdp_char_msg_elements(void)
 }
 
 
-// allocate enough space for each char string to hold wide char string properly on conversion
+/*
+    allocate enough space for each char string to hold wide char strings properly on conversion
+
+    @param void - no arguments passed
+*/
 int start_wchar_sz_conversion(void)
 {   
     wc_msearch_sz = mbstowcs(NULL, m_search_post, 0);
@@ -418,8 +451,12 @@ int start_wchar_sz_conversion(void)
 }
 
 
-// actually allocate data (wchar_t (unsigned int)) to a block of memory internally when
-// converting to wchar_t
+/*
+    actually allocate data (wchar_t (unsigned int)) to a block of memory internally when
+    converting to wchar_t
+
+    @param void - no arguments passed
+*/
 int start_wchar_allocation_opts(void)
 {
     wc_msearch = (wchar_t *) malloc((wc_msearch_sz + 1) * sizeof(wchar_t));
@@ -486,7 +523,11 @@ int start_wchar_allocation_opts(void)
 }
 
 
-// convert char *string to wchar_t *string
+/*
+    convert char *string to wchar_t *string
+
+    @param void - no arguments passed
+*/
 int start_wchar_merge_main(void)
 {
     // M-SEARCH
@@ -559,7 +600,11 @@ int start_wchar_merge_main(void)
 }
 
 
-// copy wchar_t strings to wchar_t array of type 'unsigned int'
+/*
+    copy wchar_t strings to wchar_t array of type 'unsigned int'
+
+    @param void - no arguments passed
+*/
 int set_ssdp_wchar_msg_elements(void)
 {
     size_t i = 0;
@@ -616,8 +661,14 @@ int set_ssdp_wchar_msg_elements(void)
 }
 
 
-// take each element of the recently allocated/filled wchar_t array
-// and get its equivalent length
+
+
+/*
+    Take each element of the recently allocated/filled wchar_t array
+    and get its equivalent length
+
+    @param void - no arguments passed
+*/
 int return_final_msg_len(void)
 {
     len = 0;
@@ -634,6 +685,11 @@ int return_final_msg_len(void)
 }
 
 
+/*
+    Convert wchar_t characeter array values into their utf-8 counterparts
+
+    @param void - no arguments passed
+*/
 int transform_msg_into_utf_8(void)
 {
     // target utf-8 encoded message to send to the multicast scope address
@@ -667,6 +723,11 @@ int transform_msg_into_utf_8(void)
 // -------------------------------------------------------------------------------------------
 
 
+
+/*
+    @param packetmx - the maximum amount of replies to display
+    @param socktopt - the socket timeout value
+*/
 int set_packet_sockt_opts(char *packetmx, char *socktopt)
 {
     packet_mx = strdup(packetmx);
@@ -684,6 +745,12 @@ int set_packet_sockt_opts(char *packetmx, char *socktopt)
 
 
 // setup client multicast TCP socket structure options
+
+/*
+    Setup multicast socket options
+
+    @param void - no arguments passed
+*/
 int setup_multicast_scope_opts(void)
 {
     scope_multicast_addr_opts.sin_family = AF_INET;
@@ -694,6 +761,11 @@ int setup_multicast_scope_opts(void)
 }
 
 
+/*
+    Configure client socket options
+
+    @param void - no arguments passed
+*/
 int setup_client_socket_opts(void)
 {
     if ((client_multicast_sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0)
@@ -721,6 +793,12 @@ int setup_client_socket_opts(void)
 }
 
 
+/*
+    Send message to target
+
+    @param msg - the actual message
+    @param msg_sz - the size of the message
+*/
 int send_ssdp_discovery_msg(char msg[], size_t msg_sz)
 {
     printf("%s Sending target message:\n\"\n", BLUE_OK);
@@ -884,6 +962,11 @@ int send_ssdp_discovery_msg(char msg[], size_t msg_sz)
 }
 
 
+/*
+    Main signal handler (for signal interrupts)
+
+    @param sigint - the system signal passed (captured) to/by the process
+*/
 void httpu_module_sig_handler(int sigint)
 {
     // find method to close socket
@@ -894,6 +977,16 @@ void httpu_module_sig_handler(int sigint)
 }
 
 
+/*
+    Start primary execution
+
+    @param ssdp_msa_addr - the ssdp address
+    @param ssdp_msa_port - the ssdp port
+    @param msg - the actual message
+    @param msg_sz - the entire size of the multicast message
+    @param sockt_opt - the socket timeout option
+    @param packet_mx - the maximum amount of replies to show
+*/
 int execute_httpu_module_main(char *ssdp_msa_addr, char *ssdp_msa_port, char msg[], size_t msg_sz, char *sockt_opt, char *packet_mx)
 {
     if (signal(SIGINT, httpu_module_sig_handler) == SIG_ERR)

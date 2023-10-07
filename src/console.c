@@ -21,21 +21,12 @@ extern int BACK_CALLED_FROM_BACKEND;
 
 char *console_tab_complete_cmds[(sizeof(commands) / sizeof(commands[0])) + 1];
 
-// replace each newline character with a 
-// NULL terminator
-char *detain_newline(char *line)
-{
-    size_t str_len = strlen(line);
 
-    if (str_len > 0 && line[str_len - 1] == '\n')
-    {
-        line[str_len - 1] = '\0';
-    }
+/*
+    Returns a random quote from a character array of src/quote/quote_strings.txt
 
-    return line;
-}
-
-
+    @param str - NUL
+*/
 char *return_banner_quote(char *str)
 {
     FILE *fp;
@@ -89,6 +80,10 @@ char *return_banner_quote(char *str)
 }
 
 
+/*
+    @param void - no arguments passed
+    clear the current console buffer
+*/
 void clear_screen(void)
 {
     size_t ctrl_l = strlen(COMMAND_INVOKE);
@@ -108,6 +103,12 @@ void clear_screen(void)
 }
 
 
+/*
+    Handle the main command parsing, route direction, etc
+
+    @param opts - character buffer storing accepted parsed commands passed
+    @param token_count - the amount of words passed within the opts character buffer
+*/
 void primary_cmd_handler(char *opts[], int token_count)
 {
     if (token_count < 1)
@@ -187,6 +188,11 @@ void primary_cmd_handler(char *opts[], int token_count)
 }
 
 
+/*
+    Show the prompt and store arguments separated by ' ' and '\n'
+
+    @param void - no arguments passed
+*/
 void invoke_cmd(void)
 {
     int tokCount = 0;
@@ -256,6 +262,13 @@ void invoke_cmd(void)
 }
 
 
+/*
+    Used by libreadline
+
+    @param cmd - command (literal command)
+    @param start - start of ?
+    @param end - end of ?
+*/
 char **static_cmd_console_completion(const char *cmd, int start, int end)
 {
     rl_attempted_completion_over = 1;
@@ -264,12 +277,21 @@ char **static_cmd_console_completion(const char *cmd, int start, int end)
 }
 
 
+/*
+    @param cmd - commands to store
+    @param state - state of readline 'current word'
+*/
 char *static_cmd_console_generator(const char *cmd, int state)
 {
     GLOBAL_HANDLE_TAB_COMPLETION(console_tab_complete_cmds)
 }
 
 
+/*
+    Loads commands into a completion buffer to be used by libreadline
+
+    @param void - no arguments passed
+*/
 void rl_console_memload_primary_array(void)
 {
     switch (RL_CONSOLE_MEMLOADED_STAT)
@@ -317,6 +339,11 @@ void rl_console_memload_primary_array(void)
 }
 
 
+/*
+    Retreives the current system timestamp
+
+    @param ts - system wide timestamp
+*/
 char *get_date_timestamp(char *ts)
 {
     char timestamp[15];
@@ -345,6 +372,11 @@ char *get_date_timestamp(char *ts)
 }
 
 
+/*
+    Displays the primary console buffer
+
+    @param void - no arguments passed
+*/
 void launch_console_instance(void)
 {
     printf("%s BRIGHTSTAR::Info => Console initialized\n", GREEN_OK);
@@ -400,6 +432,12 @@ void launch_console_instance(void)
     return;
 }
 
+
+/*
+    Display functional help utilities
+
+    @param void - no arguments passed
+*/
 void primary_help_handler(void)
 {
     char *help = "\nCOMMANDS\n";

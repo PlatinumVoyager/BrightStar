@@ -5,7 +5,7 @@
 
 void httpu_cmd_handler(char *opts[], int token_count);
 void httpu_discovery_handler(void);
-int httpu_set_cmd_handler(char *option, char *value, char *module_options[], int count);
+int httpu_set_cmd_handler(char *option, char *value, int count);
 int set_search_target_opt(char *st); // is warranted
 
 // check if all values are valid, and set before calling the main method

@@ -33,6 +33,13 @@ extern int BACK_CALLED_FROM_BACKEND;
 char *ssdp_targets[MAX_SUPPORTED_TARGETS];
 
 
+/*
+    Used by libreadline
+
+    @param cmd - command (literal command)
+    @param start - start of ?
+    @param end - end of ?
+*/
 char **static_cmd_invoke_completion(const char *cmd, int start, int end)
 {
     rl_attempted_completion_over = 1;
@@ -41,12 +48,19 @@ char **static_cmd_invoke_completion(const char *cmd, int start, int end)
 }
 
 
+/*
+    @param cmd - commands to store
+    @param state - state of readline 'current word'
+*/
 char *static_cmd_invoke_generator(const char *cmd, int state)
 {
     GLOBAL_HANDLE_TAB_COMPLETION(invoke_tab_complete_cmds)
 }
 
 
+/*
+    @param void - no arguments passed
+*/
 void rl_invoke_memload_primary_array(void)
 {
     switch (RL_INVOKE_MEMLOADED_STAT)
@@ -94,6 +108,11 @@ void rl_invoke_memload_primary_array(void)
 }
 
 
+/*
+    Primary shell handler (console) for the Invoke System Subshell
+
+    @param void - no arguments passed
+*/
 void invoke_handler(void)
 {
     int tokCount = 0; // total token count strtok()
@@ -195,6 +214,10 @@ void invoke_handler(void)
 }
 
 
+/*
+    @param opts - character array of commands (user input) passed
+    @param token_count - the number of commands within the character array passed (len)
+*/
 void invoke_cmd_handler(char *opts[], int token_count)
 {
     if (token_count < 1)
@@ -316,6 +339,11 @@ void invoke_cmd_handler(char *opts[], int token_count)
 }
 
 
+/*
+    Used for loading and showing supported ssdp search target strings
+
+    @param void - no arguments passed
+*/
 void list_ssdp_operations(void)
 {
     // define targets
@@ -386,6 +414,7 @@ void list_ssdp_operations(void)
     }
 
     // if not, die.
+    // used for loading into memory only
     else 
     {
         return;
@@ -422,6 +451,12 @@ void list_ssdp_operations(void)
 }
 
 
+/*
+    Load character array containing supported search string targets into memory
+
+    @param mem_target - dummy array used to pass legitimate ssdp search strings
+                        into the primary character array
+*/
 void memload_ssdp_targets(char *mem_target[], size_t len)
 {
     printf("%s Loading supported search target strings into memory\n", BLUE_OK);
@@ -449,6 +484,11 @@ void memload_ssdp_targets(char *mem_target[], size_t len)
 }
 
 
+/*
+    Global method for quitting the console application
+
+    @param void - no arguments passed
+*/
 void global_quit(void)
 {
     int i;
@@ -472,6 +512,11 @@ void global_quit(void)
 }
 
 
+/*
+    Display functional help utilities
+
+    @param void - no arguments passed
+*/
 void invoke_help_handler(void)
 {
     char *help = "\nCOMMANDS\n";

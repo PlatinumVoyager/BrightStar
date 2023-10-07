@@ -133,6 +133,12 @@ int SET_0ALL_FLAG = SET_0ALL_FALSE;
 extern char *ssdp_targets[MAX_SUPPORTED_TARGETS];
 
 
+/*
+    Logic for dealing with 'opts'
+
+    @param opts - characeter array of supported commands (user input)
+    @param token_count - the amount of characters within the array
+*/
 void httpu_cmd_handler(char *opts[], int token_count)
 {
     // if <ENTER> was commited to the prompt, return prompt
@@ -261,7 +267,7 @@ void httpu_cmd_handler(char *opts[], int token_count)
                         */
 
                         // check if option is a valid option
-                        int SET_CMD_RETURN = httpu_set_cmd_handler(option, value, httpu_module_options, i);
+                        int SET_CMD_RETURN = httpu_set_cmd_handler(option, value, i);
 
                         switch (SET_CMD_RETURN)
                         {
@@ -495,6 +501,13 @@ void httpu_cmd_handler(char *opts[], int token_count)
 }
 
 
+/*
+    Used by libreadline
+
+    @param cmd - command (literal command)
+    @param start - start of ?
+    @param end - end of ?
+*/
 char **static_cmd_httpu_completion(const char *cmd, int start, int end)
 {
     rl_attempted_completion_over = 1;
@@ -503,12 +516,22 @@ char **static_cmd_httpu_completion(const char *cmd, int start, int end)
 }
 
 
+/*
+    @param cmd - commands to store
+    @param state - state of readline 'current word'
+*/
 char *static_cmd_httpu_generator(const char *cmd, int state)
 {
     GLOBAL_HANDLE_TAB_COMPLETION(primary_tab_complete_cmds)
 }
 
 
+/*
+    Make sure the available TAB completion characters are loaded properly so they can be used
+    these include module commands, etc.
+
+    @param void - no arguments passed
+*/
 void rl_httpu_memload_primary_array(void)
 {
     switch (RL_HTTPU_MEMLOADED_STAT)
@@ -565,7 +588,11 @@ void rl_httpu_memload_primary_array(void)
 }
 
 
+/*
+    Main command handler
 
+    @param void - no arguments passed
+*/
 void httpu_discovery_handler(void)
 {
     int tokCount = 0;
@@ -636,7 +663,11 @@ void httpu_discovery_handler(void)
 }
 
 
-// create function to list character arrays
+/*
+    List all current options with their currently set values when calling 'show'
+
+    @param void - no arguments passed
+*/
 void display_preliminary_options(void)
 {
     ft_table_t *table = ft_create_table();
@@ -706,6 +737,11 @@ void display_preliminary_options(void)
 }
 
 
+/*
+    Load generic (default) options for the httpu-discovery module
+
+    @param config - the TOML configuration file that will load the default/generic values
+*/
 void populate_preliminary_options(toml_table_t *config)
 {
     int pos = 0;
@@ -780,6 +816,10 @@ void populate_preliminary_options(toml_table_t *config)
 // this function is responsible for actually
 // invoking the module (binary) that was built
 // by the operator before calling ./bin/BRIGHTSTAR
+
+/*
+    @param void - no arguments passed
+*/
 void register_main_module_method(void)
 {
     // Mnemonic             Index (toml_discovery_values)
@@ -844,12 +884,11 @@ void register_main_module_method(void)
 
 
 /*
-    # Command: set
-    # Usage: set <OPTION> <VALUE>
-    #
-    # Set the <OPTION> to <VALUE> <- VALUE must be within boundaries
+    @param option - the target option to switch values from
+    @param value - the value passed after option
+    @param count - the current generic index used when parsing character arrays
 */
-int httpu_set_cmd_handler(char *option, char *value, char *module_options[], int count)
+int httpu_set_cmd_handler(char *option, char *value, int count)
 {
     if (strcmp(option, httpu_scope_options[count]) == 0)
     {
@@ -1046,6 +1085,12 @@ int httpu_set_cmd_handler(char *option, char *value, char *module_options[], int
 }
 
 
+/*
+    Logic for showing specific options with their values set/shown
+
+    @param opt - the option specified when calling 'show'
+    @param index - the current index of toml_discovery_values
+*/
 void confer_variable_values(char *opt, size_t index)
 {
     // "PORT" = SSDP PORT
@@ -1171,9 +1216,11 @@ void confer_variable_values(char *opt, size_t index)
     return;
 }
 
+
 /*
-    handle search targets
-    handle ID and string names passed to "set ST <VALUE>"
+    Logic for handling integral values or string based values for the search target
+
+    @param st - search target string or ID passed to 'set ST <VALUE>'
 */
 int set_search_target_opt(char *st)
 {
@@ -1311,6 +1358,11 @@ int set_search_target_opt(char *st)
 }
 
 
+/*
+    Checks to see if all values within 'toml_discovery_values' are ! NULL
+
+    @param void - no arguments passed
+*/
 int module_pre_method_check(void)
 {
     // total amount of options that need to be checked
@@ -1336,6 +1388,11 @@ int module_pre_method_check(void)
 }
 
 
+/*
+    Show operational help utilities
+
+    @param void - no arguments passed
+*/
 void httpu_discovery_return_help(void)
 {
     char *str = "COMMANDS";

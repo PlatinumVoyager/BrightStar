@@ -26,6 +26,11 @@ toml_table_t *base_configuration;
 toml_table_t *module_information;
 
 
+/*
+    Handles singular arguments passed to setmod respectively
+
+    @param opt - the option passed to 'setmod'
+*/
 void setmod_cmd_handler(char *opt)
 {   
     size_t sub_count = 0, mod_count = 0;
@@ -131,6 +136,11 @@ void setmod_cmd_handler(char *opt)
 }
 
 
+/*
+    Checks if the TOML configuration files have been loaded into memory or not before calling 'setmod list'
+
+    @param void - no arguments passed
+*/
 void is_toml_loaded(void)
 {
     // PURPOSE: to determine if BOTH configuration files have been loaded successfully or not
@@ -188,6 +198,11 @@ void is_toml_loaded(void)
 }
 
 
+/*
+    Lists the available modules when TOML configuration files are loaded into memory
+
+    @param void - no arguments passed
+*/
 void list_supported_modules(void)
 {
     ft_table_t *table = ft_create_table();
@@ -232,6 +247,12 @@ void list_supported_modules(void)
 // load static configuration files =>
 //           1. '../src/config/defaultcfg.toml'
 //           2. '../src/modules/mod.toml'
+
+/*
+    Parses the current passed argument for 'file'
+
+    @param file - target TOML configuration file
+*/
 toml_table_t *parse_target_toml(char *file)
 {
     FILE *target;
@@ -265,6 +286,12 @@ toml_table_t *parse_target_toml(char *file)
 // must have a preloaded toml configuration file 'sitting' in memory in order to 
 // call this function
 // designed specifically for iterating through the supported modules offered by BRIGHTSTAR
+
+/*
+    Load TOML module configuration into memory
+
+    @param config - no arguments passed
+*/
 void iterate_modules_array(toml_table_t *config)
 {
     toml_table_t *modules_array = toml_table_in(config, "modules_supported");
