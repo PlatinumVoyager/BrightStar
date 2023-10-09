@@ -81,6 +81,9 @@ char httpumx_f[5];
 char pmx_f[5];
 char st_f[60];
 
+// prevents "0 (unlimited)" from appearing next to SSDPM <VALUE> when calling show
+int SET_RECVMAX_BOUNDS = 0;
+
 // max of 1000 supported
 char recvmx_f[RECEVIED_MAX_BOUNDARY];
 
@@ -695,7 +698,7 @@ void display_preliminary_options(void)
         snprintf(desc, desc_len, "%s", toml_name_description[i]);
 
         // setup (unlimited)
-        if (strcmp(toml_discovery_values[i], "0") == 0)
+        if (strcmp(toml_discovery_values[i], "0") == 0 && strcmp(name, "RECVMAX") == 0)
         {
             size_t sz = snprintf(NULL, 0, "%s (unlimited)", toml_discovery_values[i]);
 
@@ -957,6 +960,13 @@ int httpu_set_cmd_handler(char *option, char *value, int count)
         {
             PRE_CONDITIONAL_VALUE_CHECK
 
+            if (atoi(value) <= 0)
+            {
+                printf("%s BRIGHTSTAR::Error => foreign value of \"%s\" passed as argument. Not allowed\n", RED_ERR, value);
+
+                return GENERIC_ERROR_RETURN_NONE;
+            }
+
             // no packet limit
             SET_STATIC_OPTION_BOUNDRY
         }
@@ -1062,6 +1072,8 @@ int httpu_set_cmd_handler(char *option, char *value, int count)
         // RECEIVED MAX
         else if (strcmp(option, "RECVMAX") == 0)
         {
+            SET_RECVMAX_BOUNDS = 1;
+
             PRE_CONDITIONAL_VALUE_CHECK
 
             if (atoi(value) < 0 || atoi(value) > RECEVIED_MAX_BOUNDARY || !isdigit(value[0]))
