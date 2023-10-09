@@ -41,6 +41,12 @@ void register_main_module_method();
 #define GENERIC_ERROR_RETURN_NONE -1
 #define ILLEGAL_SET_OPTIONS_PASSED -2
 
+#define VCHECK_IS_ZERO atoi(value) <= 0
+
+#define SET_BOUNDS_NOT_PASSED_ERR\
+                                    printf("%s BRIGHTSTAR::Error => foreign value of \"%s\" passed as argument. Not allowed\n", RED_ERR, value);\
+                                    return GENERIC_ERROR_RETURN_NONE;\
+
 // --------
 #define SET_0ALL_TRUE 1
 #define SET_0ALL_FALSE 0

@@ -81,9 +81,6 @@ char httpumx_f[5];
 char pmx_f[5];
 char st_f[60];
 
-// prevents "0 (unlimited)" from appearing next to SSDPM <VALUE> when calling show
-int SET_RECVMAX_BOUNDS = 0;
-
 // max of 1000 supported
 char recvmx_f[RECEVIED_MAX_BOUNDARY];
 
@@ -932,11 +929,9 @@ int httpu_set_cmd_handler(char *option, char *value, int count)
         {
             PRE_CONDITIONAL_VALUE_CHECK
 
-            if (atoi(value) > SOCKT_BOUNDARY_MAX)
+            if (atoi(value) > SOCKT_BOUNDARY_MAX || VCHECK_IS_ZERO)
             {
-                printf("%s BRIGHTSTAR::Error => setsockopt value is over boundary: %s > 999 (SOCKT_BOUNDARY_MAX)\n", RED_ERR, value);
-
-                return GENERIC_ERROR_RETURN_NONE;
+                SET_BOUNDS_NOT_PASSED_ERR
             }
 
             SET_STATIC_OPTION_BOUNDRY
@@ -946,11 +941,9 @@ int httpu_set_cmd_handler(char *option, char *value, int count)
         {
             PRE_CONDITIONAL_VALUE_CHECK
 
-            if (atoi(value) > SSDP_MX_MAX_VALUE)
+            if (atoi(value) > SSDP_MX_MAX_VALUE || VCHECK_IS_ZERO)
             {
-                printf("%s BRIGHTSTAR::Error => target SSDPMX value \"%s\" > %d!\n", RED_ERR, value, SSDP_MX_MAX_VALUE);
-
-                return GENERIC_ERROR_RETURN_NONE;
+                SET_BOUNDS_NOT_PASSED_ERR
             }
 
             SET_STATIC_OPTION_BOUNDRY
@@ -960,11 +953,9 @@ int httpu_set_cmd_handler(char *option, char *value, int count)
         {
             PRE_CONDITIONAL_VALUE_CHECK
 
-            if (atoi(value) <= 0)
+            if (VCHECK_IS_ZERO)
             {
-                printf("%s BRIGHTSTAR::Error => foreign value of \"%s\" passed as argument. Not allowed\n", RED_ERR, value);
-
-                return GENERIC_ERROR_RETURN_NONE;
+                SET_BOUNDS_NOT_PASSED_ERR
             }
 
             // no packet limit
@@ -1072,8 +1063,6 @@ int httpu_set_cmd_handler(char *option, char *value, int count)
         // RECEIVED MAX
         else if (strcmp(option, "RECVMAX") == 0)
         {
-            SET_RECVMAX_BOUNDS = 1;
-
             PRE_CONDITIONAL_VALUE_CHECK
 
             if (atoi(value) < 0 || atoi(value) > RECEVIED_MAX_BOUNDARY || !isdigit(value[0]))

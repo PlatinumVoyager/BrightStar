@@ -14,7 +14,7 @@ int main(int argc, char *argv[])
 
     if (argc < 2)
     {
-        return -1;
+        goto DROP_CONSOLE;
     }
 
     char *cmd = argv[1];
@@ -36,6 +36,8 @@ int main(int argc, char *argv[])
             else if (strcmp(cmd, "--console") == 0)
             {
                 PRINT_IDENTIFIER
+
+                DROP_CONSOLE:
 
                 // drop into sub operational command/control console
                 launch_console_instance();
