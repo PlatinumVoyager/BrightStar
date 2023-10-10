@@ -356,11 +356,12 @@ void list_ssdp_operations(void)
         // DTs (device types)
         // internet gateway device
         "urn:schemas-upnp-org:device:WANConnectionDevice:1",
-        "urn:schemas-upnp-org:device:InternetGatewayDevice:1",
-        "urn:schemas-upnp-org:device:InternetGatewayDevice:2",
-        
+
         // WAN common interface config
         "urn:schemas-upnp-org:device:WANCommonInterfaceConfig:1",
+
+        "urn:schemas-upnp-org:device:InternetGatewayDevice:1",
+        "urn:schemas-upnp-org:device:InternetGatewayDevice:2",
 
         // media server
         "urn:schemas-upnp-org:device:MediaServer:1",
