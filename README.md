@@ -1,7 +1,12 @@
 # BrightStar
-![image](https://github.com/PlatinumVoyager/BrightStar/assets/116006542/6c480c4a-1c11-4a7e-b53c-8269ecdc1cdd)
+
+[![PlatinumVoyager - BrightStar](https://img.shields.io/static/v1?label=PlatinumVoyager&message=BrightStar&color=blue&logo=github)](https://github.com/PlatinumVoyager/BrightStar "Go to GitHub repo")
+[![stars - BrightStar](https://img.shields.io/github/stars/PlatinumVoyager/BrightStar?style=social)](https://github.com/PlatinumVoyager/BrightStar)
+[![forks - BrightStar](https://img.shields.io/github/forks/PlatinumVoyager/BrightStar?style=social)](https://github.com/PlatinumVoyager/BrightStar)
 
 *Simple Service Discovery Protocol (SSDP) LAN/WAN analyzer/manipulation framework written in C.*
+
+![image](https://github.com/PlatinumVoyager/BrightStar/assets/116006542/6c480c4a-1c11-4a7e-b53c-8269ecdc1cdd)
 
 <br/>
 
